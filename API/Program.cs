@@ -1,4 +1,6 @@
+using Core.Entities;
 using Core.Interfaces;
+using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +16,7 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 });
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
+builder.Services.AddScoped<typeof(IGenericRepository<BaseEntity>()), typeof(GenericRepository<BaseEntity>())>();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
