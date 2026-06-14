@@ -1,7 +1,6 @@
-using System;
-using System.Security.Cryptography.X509Certificates;
 using Core.Entities;
 using Core.Interfaces;
+using Core.Specifications;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,29 +13,51 @@ public class GenericRepository<T>(StoreContext context) : IGenericRepository<T> 
         context.Set<T>().Add(entity);
     }
 
-    public void Delete(T entity)
+    public void Remove(T entity)
     {
         context.Set<T>().Remove(entity);
     }
 
-    public async Task<T> GetEntityById(int id)
+    public async Task<T?> GetByIdAsync(int id)
     {
         return await context.Set<T>().FindAsync(id);
     }
 
-    public async Task<IReadOnlyList<T>> GetListAsync()
+    public async Task<IReadOnlyList<T>> ListAllAsync()
     {
         return await context.Set<T>().ToListAsync();
     }
 
     public void Update(T entity)
     {
-        var item = context.Set<T>().Attach(entity);
-        item.State = EntityState.Modified;
+        // Attach works by allowing entity framework to track the object
+        context.Set<T>().Attach(entity);
+        context.Entry(entity).State = EntityState.Modified;
     }
     
     public bool Exists(int id)
     {
         return context.Set<T>().Any(x => x.Id == id);
+    }
+
+    public async Task<bool> SaveAllAsync()
+    {
+        return await context.SaveChangesAsync() > 0;
+    }
+
+    public async Task<T?> GetEntityAsync(ISpecification<T> spec)
+    {
+        
+        return await ApplySpecification(spec).FirstOrDefaultAsync();
+    }
+
+    public async Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec)
+    {
+        return await ApplySpecification(spec).ToListAsync();
+    }
+
+    private IQueryable<T> ApplySpecification( ISpecification<T> spec)
+    {
+        return SpecificationEvaluator<T>.GetQuery(context.Set<T>().AsQueryable(), spec);
     }
 }

@@ -34,6 +34,9 @@ public class ProductRepository(StoreContext context) : IProductRepository
     public async Task<IReadOnlyList<Product>> GetProductsAsync(string? brand, string? type, string? sort)
     {
         var query = context.Products.AsQueryable();
+        // query = query.Where(x =>
+        //     (string.IsNullOrWhiteSpace(brand) || x.Brand == brand) &&
+        //     (string.IsNullOrWhiteSpace(type) || x.Type == type));
 
         if (!string.IsNullOrWhiteSpace(brand))
         {
