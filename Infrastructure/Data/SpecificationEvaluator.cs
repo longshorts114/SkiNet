@@ -1,7 +1,7 @@
 using System;
 using Core.Interfaces;
 
-namespace Core.Specifications;
+namespace Infrastructure.Data;
 
 public class SpecificationEvaluator<T>
 {
@@ -21,6 +21,11 @@ public class SpecificationEvaluator<T>
         if (spec.OrderByDescending != null)
         {
             query = query.OrderByDescending(spec.OrderByDescending);
+        }
+
+        if (spec.IsPagingEnabled)
+        {
+            query = query.Skip(spec.Skip).Take(spec.Take);
         }
 
         return query;
@@ -53,6 +58,11 @@ public class SpecificationEvaluator<T>
         if (spec.IsDistinct)
         {
             selectQuery = selectQuery?.Distinct();
+        }
+
+        if (spec.IsPagingEnabled)
+        {
+            selectQuery = selectQuery?.Skip(spec.Skip).Take(spec.Take);
         }
 
         return selectQuery ?? query.Cast<TResult>();
