@@ -9,19 +9,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class ProductsController(IGenericRepository<Product> repo) : ControllerBase
+public class ProductsController(IGenericRepository<Product> repo) : BaseApiController
 {
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts([FromQuery] ProductSpecParams specParams)
     {
         var spec = new ProductSpecification(specParams);
-        var products = await repo.ListAsync(spec);
-        var count = await repo.GetCountAsync(spec);
-        var pagination = new Pagination<Product>(specParams.PageSize, specParams.PageIndex, count, products);
-        return Ok(pagination);
+        // var products = await repo.ListAsync(spec);
+        // var count = await repo.GetCountAsync(spec);
+        // var pagination = new Pagination<Product>(specParams.PageSize, specParams.PageIndex, count, products);
+        return await CreatePagedResult(spec, repo, specParams.PageSize,specParams.PageIndex);
     }
 
     [HttpGet("{id:int}")]
