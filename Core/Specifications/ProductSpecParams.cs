@@ -30,7 +30,7 @@ public class ProductSpecParams
 
     public int MaxPageSize = 50;
     public int PageIndex {get; set;} = 1;
-    private int _pageSize;
+    private int _pageSize = 6;
     public int PageSize{
         get => _pageSize;
         set
@@ -39,7 +39,7 @@ public class ProductSpecParams
         }
     }
 
-   private string _search;
+   private string? _search;
    public string Search
    {
     get => _search ?? "";
