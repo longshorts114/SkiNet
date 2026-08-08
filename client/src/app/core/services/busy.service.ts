@@ -1,21 +1,20 @@
-import { Service } from '@angular/core';
+import { Service, signal } from '@angular/core';
 
 @Service()
 export class BusyService {
-    loading = false;
+    loading = signal<boolean>(false);
     busyRequestCount = 0;
 
     busy() {
         this.busyRequestCount++;
-        this.loading = true;
+        this.loading.set(true);
     }
 
     idle() {
         this.busyRequestCount--;
-        this.loading = false;
         if (this.busyRequestCount <= 0){
             this.busyRequestCount = 0;
-            this.loading = false;
+            this.loading.set(false);
         }
     }
 }
